@@ -44,6 +44,7 @@ riscv_srcs = \
 	dts.cc \
 	sim.cc \
 	interactive.cc \
+	single_step.cc \
 	trap.cc \
 	cachesim.cc \
 	mmu.cc \

@@ -16,6 +16,8 @@
 #include <memory>
 #include <sys/types.h>
 
+#include <pthread.h>
+
 class mmu_t;
 class remote_bitbang_t;
 
@@ -24,7 +26,7 @@ class sim_t : public htif_t, public simif_t
 {
 public:
   sim_t(const char* isa, const char* priv, const char* varch, size_t _nprocs,
-        bool halted, bool real_time_clint,
+        bool halted, bool real_time_clint, bool run_single_step,
         reg_t initrd_start, reg_t initrd_end, const char* bootargs,
         reg_t start_pc, std::vector<std::pair<reg_t, mem_t*>> mems,
         std::vector<std::pair<reg_t, abstract_device_t*>> plugin_devices,
@@ -85,6 +87,7 @@ private:
   bool debug;
   bool histogram_enabled; // provide a histogram of PCs
   bool log;
+  bool run_single_step;
   remote_bitbang_t* remote_bitbang;
 
   // memory-mapped I/O routines
@@ -142,6 +145,14 @@ public:
   // enumerate processors, which segfaults if procs hasn't been initialized
   // yet.
   debug_module_t debug_module;
+public:
+  pthread_mutex_t mutex;
+  reg_t gpr[32];
+  reg_t core_pc;
+  int num_of_step;
+private:
+  void single_step();
+  void store_gpr_buffer();
 };
 
 extern volatile bool ctrlc_pressed;

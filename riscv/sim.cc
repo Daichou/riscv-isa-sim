@@ -27,7 +27,7 @@ static void handle_signal(int sig)
 }
 
 sim_t::sim_t(const char* isa, const char* priv, const char* varch,
-             size_t nprocs, bool halted, bool real_time_clint,
+             size_t nprocs, bool halted, bool real_time_clint, bool run_single_step,
              reg_t initrd_start, reg_t initrd_end, const char* bootargs,
              reg_t start_pc, std::vector<std::pair<reg_t, mem_t*>> mems,
              std::vector<std::pair<reg_t, abstract_device_t*>> plugin_devices,
@@ -47,6 +47,7 @@ sim_t::sim_t(const char* isa, const char* priv, const char* varch,
     dtb_file(dtb_file ? dtb_file : ""),
     dtb_enabled(dtb_enabled),
     log_file(log_path),
+    run_single_step(run_single_step),
     current_step(0),
     current_proc(0),
     debug(false),
@@ -120,7 +121,9 @@ void sim_t::main()
 
   while (!done())
   {
-    if (debug || ctrlc_pressed)
+    if (run_single_step)
+      single_step();
+    else if (debug || ctrlc_pressed)
       interactive();
     else
       step(INTERLEAVE);

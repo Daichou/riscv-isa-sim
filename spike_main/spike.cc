@@ -191,6 +191,7 @@ int main(int argc, char** argv)
   bool dump_dts = false;
   bool dtb_enabled = true;
   bool real_time_clint = false;
+  bool run_single_step = false;
   size_t nprocs = 1;
   const char* kernel = NULL;
   reg_t kernel_offset, kernel_size;
@@ -375,7 +376,7 @@ int main(int argc, char** argv)
     }
   }
 
-  sim_t s(isa, priv, varch, nprocs, halted, real_time_clint,
+  sim_t s(isa, priv, varch, nprocs, halted, real_time_clint, run_single_step, 
       initrd_start, initrd_end, bootargs, start_pc, mems, plugin_devices, htif_args,
       std::move(hartids), dm_config, log_path, dtb_enabled, dtb_file);
   std::unique_ptr<remote_bitbang_t> remote_bitbang((remote_bitbang_t *) NULL);
